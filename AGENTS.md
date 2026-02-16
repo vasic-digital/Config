@@ -1,0 +1,33 @@
+# AGENTS.md
+
+Guidelines for AI agents working on this codebase.
+
+## Project Context
+
+This is the `digital.vasic.config` Go module -- a configuration management library. It is a standalone module with no application binary; it provides packages for import by other projects.
+
+## Development Guidelines
+
+1. **Do not add a `main.go`** -- this is a library module, not an application.
+2. **All public functions must have doc comments** following Go conventions.
+3. **Tests use `testify`** (`assert` and `require`) -- do not introduce other test frameworks.
+4. **Error messages** should use lowercase and wrap with `%w` where applicable.
+5. **No external dependencies** beyond `testify` for testing -- keep the dependency footprint minimal.
+
+## Testing
+
+Run all tests before submitting changes:
+
+```bash
+go test ./... -count=1
+```
+
+Every new public function must have corresponding test coverage.
+
+## Package Boundaries
+
+- `pkg/config` -- file I/O only, no env var logic
+- `pkg/env` -- env var loading only, no file I/O
+- `pkg/validator` -- pure validation logic, no I/O of any kind
+
+Keep these boundaries clean. Cross-package imports within this module should be avoided.
