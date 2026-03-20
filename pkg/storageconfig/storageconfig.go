@@ -8,14 +8,14 @@ import "encoding/json"
 type StorageType string
 
 const (
-	StorageTypeWebDAV       StorageType = "WEBDAV"
-	StorageTypeFTP          StorageType = "FTP"
-	StorageTypeSFTP         StorageType = "SFTP"
-	StorageTypeSMB          StorageType = "SMB"
-	StorageTypeGoogleDrive  StorageType = "GOOGLE_DRIVE"
-	StorageTypeDropbox      StorageType = "DROPBOX"
-	StorageTypeOneDrive     StorageType = "ONEDRIVE"
-	StorageTypeGit          StorageType = "GIT"
+	StorageTypeWebDAV      StorageType = "WEBDAV"
+	StorageTypeFTP         StorageType = "FTP"
+	StorageTypeSFTP        StorageType = "SFTP"
+	StorageTypeSMB         StorageType = "SMB"
+	StorageTypeGoogleDrive StorageType = "GOOGLE_DRIVE"
+	StorageTypeDropbox     StorageType = "DROPBOX"
+	StorageTypeOneDrive    StorageType = "ONEDRIVE"
+	StorageTypeGit         StorageType = "GIT"
 )
 
 // AllStorageTypes returns all supported storage types.
@@ -331,8 +331,8 @@ func NewGitConfig(name, repositoryURL, localCachePath string) *GitConfig {
 		Branch:            "main",
 		LocalCachePath:    localCachePath,
 		AutoSync:          true,
-		CommitAuthorName:  "Yole",
-		CommitAuthorEmail: "yole@example.com",
+		CommitAuthorName:  "Catalogizer",
+		CommitAuthorEmail: "catalogizer@vasic.digital",
 		ConnectionTimeout: 30000,
 	}
 }

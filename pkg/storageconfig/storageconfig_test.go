@@ -140,8 +140,8 @@ func TestNewGitConfig(t *testing.T) {
 	assert.Equal(t, StorageTypeGit, cfg.Type)
 	assert.Equal(t, "main", cfg.Branch)
 	assert.True(t, cfg.AutoSync)
-	assert.Equal(t, "Yole", cfg.CommitAuthorName)
-	assert.Equal(t, "yole@example.com", cfg.CommitAuthorEmail)
+	assert.Equal(t, "Catalogizer", cfg.CommitAuthorName)
+	assert.Equal(t, "catalogizer@vasic.digital", cfg.CommitAuthorEmail)
 	assert.Equal(t, 30000, cfg.ConnectionTimeout)
 }
 
