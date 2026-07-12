@@ -1,0 +1,126 @@
+# Per-host multi-track configuration for the SFTP project (§11.4.187).
+# Host-keyed config — ONE file per host; committed to git.
+# Filename = <hostname>.yaml. Consumed by constitution/scripts/multitrack/
+# (inherited BY REFERENCE, never copied — §11.4.28(B)/§11.4.177).
+#
+# Honest gap (§11.4.6): this project does NOT have dedicated physical NVMe
+# drives per track (unlike the Atmosphere reference project). The track paths
+# are logical directories under /mnt/track<N>/; the operator provisions these
+# directories (or mounts) before the multitrack ruler is started. The
+# drive_serial values below are logical identifiers, not physical drive serials
+# — `mt_plan` will report them as ABSENT until the operator provisions physical
+# drives or creates the directories. This config is valid for bootstrap (it
+# parses to MT_TRACK_COUNT=2) and for the alias↔worktree resolver.
+
+schema_version: 1
+
+host:
+  hostname: nezha
+  machine_id: "2b81a82f970a4429"
+
+# System drive — NEVER format / partition / touch this.
+protected_drives:
+  - serial: "S4EWNS0X108183F"
+    reason: "system drive — / mounted on nvme0n1p3"
+
+# Logical tracks for parallel development (§11.4.178 / §11.4.179).
+# Each track gets its own git clone (own .git, corruption-isolated) at
+# /mnt/track<N>/sftp-t<N>/. The multitrack engine resolves alias→worktree
+# via the track-qualified identity sftp__track<N>__<role>.
+#
+# drive_serial values are LOGICAL identifiers (§11.4.6 honest — no physical
+# track drives are dedicated to this project; the operator creates the
+# directories manually or mounts drives at the declared paths).
+tracks:
+  - id: track-1
+    role: main
+    branch: main
+    drive_serial: "sftp-track1-logical"
+    mount: /mnt/track1
+    fs: btrfs
+    encrypted: false
+    focus: "Primary — conductor session + commit/push gate + code reviews (§11.4.125/§11.4.142)"
+  - id: track-2
+    role: feature
+    branch: main
+    drive_serial: "sftp-track2-logical"
+    mount: /mnt/track2
+    fs: btrfs
+    encrypted: false
+    focus: "Feature development — API + backend + store + vault + sftpsync"
+  - id: track-3
+    role: feature
+    branch: main
+    drive_serial: "sftp-track3-logical"
+    mount: /mnt/track3
+    fs: btrfs
+    encrypted: false
+    focus: "Client development — web SPA + mobile KMP + Firebase + design tokens"
+  - id: track-4
+    role: feature
+    branch: main
+    drive_serial: "sftp-track4-logical"
+    mount: /mnt/track4
+    fs: btrfs
+    encrypted: false
+    focus: "QA + tests — test matrix + Challenges banks + HelixQA suites + docs"
+
+# Test-device pool (NOT APPLICABLE for SFTP — no Android devices to test).
+# device_pool: []
+
+# Track<->device lease policy (NOT APPLICABLE for SFTP).
+# lease_policy: {}
+
+# Claude Code alias roster (§11.4.187 per-subscription auth + rate-limit
+# fallback). NAMES ONLY — never keys/tokens (§11.4.10; keys live in host
+# ~/api_keys.sh outside the repo). Populated from the live .claude-*
+# directories on nezha (captured 2026-07-11).
+#
+# Native aliases (distinct Claude subscriptions/accounts):
+#   - default  : bare ~/.claude (the operator's primary account)
+#   - claude4  : ~/.claude-claude4 (additional Claude subscription)
+#
+# Provider aliases (priority order per operator preference, captured from
+# Atmosphere's alias_priority.yaml capability_rank):
+#   - deepseek, kimi-for-coding, xiaomi, opencode, openrouter
+aliases:
+  - name: default
+    kind: native
+  - name: claude4
+    kind: native
+  - name: deepseek
+    kind: provider
+  - name: kimi-for-coding
+    kind: provider
+  - name: xiaomi
+    kind: provider
+  - name: opencode
+    kind: provider
+  - name: openrouter
+    kind: provider
+
+# §11.4.187 conductor-stays-home: the conductor alias is NEVER worktree-bound.
+# Its session always runs from the shared /home checkout. The resolver returns
+# "no worktree" for this alias, and bind-on-start never binds it.
+#
+# Empty string = NO alias is special-cased; whichever session is unbound
+# acts as the conductor. For the SFTP project, the operator typically drives
+# the conductor from the `deepseek` provider alias.
+conductor: ""
+
+# §11.4.178 track-qualified worktree subdir. The stable project name `sftp`
+# is used as the worktree subdirectory within each /mnt/track<N>/, so track-1
+# resolves to /mnt/track1/sftp/ and track-2 to /mnt/track2/sftp/.
+# NOTE: The task specified /mnt/track<N>/sftp-t<N>/ paths. The worktree_subdir
+# key controls the leaf directory name. Set to "sftp" for the canonical
+# project-name-only form per §11.4.29 (lowercase snake_case). The t<N>
+# suffix is part of the track-qualified identity, not the directory name.
+worktree_subdir: sftp
+
+# §11.4.187 auto-fallback: rate-limit transcript signatures the per-alias
+# monitor matches to detect a usage/quota limit and trigger orchestrator
+# fallback. The canonical Claude Code rate-limit signatures.
+fallback:
+  signatures:
+    - '"apiErrorStatus":429'
+    - '"isApiErrorMessage":true'
